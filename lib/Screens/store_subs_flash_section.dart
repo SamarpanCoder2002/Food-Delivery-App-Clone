@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:customer/BackEnd/make_class_for_api_data.dart';
+import 'package:customer/BackEnd/api_call_section.dart';
 import 'package:customer/Screens/delivery_once_and_create_subscription_screen.dart';
 
 import 'package:customer/types.dart';
@@ -22,7 +22,7 @@ class StoreSection extends StatefulWidget {
 
 class _StoreSectionState extends State<StoreSection> {
   bool _vegOnlyToggle = false;
-  late Future futureGetCollectionStores;
+  late Future _future;
 
   void _checkConnectivity() async {
     final ConnectivityResult connectivityResult =
@@ -51,7 +51,9 @@ class _StoreSectionState extends State<StoreSection> {
   void initState() {
     if (widget.pageName == PageName.StorePage) _checkConnectivity();
 
-    this.futureGetCollectionStores = getStoreCollectionData();
+    this._future = widget.pageName == PageName.StorePage
+        ? getStoreCollectionData()
+        : getFoodCategory();
     super.initState();
   }
 
@@ -178,13 +180,11 @@ class _StoreSectionState extends State<StoreSection> {
         width: double.maxFinite,
         height: MediaQuery.of(context).size.height / 2,
         child: FutureBuilder(
-            future: this.futureGetCollectionStores,
+            future: this._future,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 final List<dynamic> _fetchData =
                     jsonDecode(snapshot.data.toString())['data'].values.first;
-
-                print(_fetchData);
 
                 return ListView.builder(
                   itemCount: _fetchData.length,
@@ -201,7 +201,7 @@ class _StoreSectionState extends State<StoreSection> {
                       width: double.maxFinite,
                       height: 200,
                       decoration: BoxDecoration(
-                        color: Colors.black12,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(30.0),
                         image: (_fetchData[index]['shopImageUrl'] != Null &&
                                 !_fetchData[index]['shopImageUrl']
@@ -322,7 +322,7 @@ class _StoreSectionState extends State<StoreSection> {
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () {
-                                    _subscribtionPlan();
+                                    _subscriptionPlan();
                                   },
                                   child: Container(
                                     width: double.maxFinite,
@@ -366,102 +366,31 @@ class _StoreSectionState extends State<StoreSection> {
 
   Widget _flashSalePageCategory() {
     return Container(
-      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-      child: Column(
-        children: [
-          for (int i = 0; i < 4; i++)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => StoreSection(
-                                  pageName: PageName.MenuPage,
-                                )));
-                  },
-                  child: Container(
-                    width: 150.0,
-                    height: 150.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(50.0),
-                          topRight: Radius.circular(50.0),
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              ExactAssetImage('assets/images/fruits.png'),
-                          radius: 50.0,
-                        ),
-                        Text(
-                          'Fruits',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => StoreSection(
-                                  pageName: PageName.MenuPage,
-                                )));
-                  },
-                  child: Container(
-                    width: 150.0,
-                    height: 160.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(50.0),
-                          topRight: Radius.circular(50.0),
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.black12,
-                          backgroundImage:
-                              ExactAssetImage('assets/images/beverage.jpg'),
-                          radius: 50.0,
-                          onBackgroundImageError: (_, __) {
-                            Center(child: CircularProgressIndicator());
-                          },
-                        ),
-                        Text(
-                          'Beverages',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
+      margin: EdgeInsets.all(10.0),
+      padding: EdgeInsets.only(bottom: 20.0),
+      width: double.maxFinite,
+      height: MediaQuery.of(context).size.height / 2,
+      child: FutureBuilder(
+          future: this._future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              final List<dynamic> _fetchData =
+                  jsonDecode(snapshot.data.toString())['data'].values.first;
+
+              return ListView.builder(
+                itemCount: _fetchData.length ~/ 2.0,
+                itemBuilder: (context, index) =>
+                    _constructCategorySection(_fetchData, index),
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }),
     );
   }
 
-  void _subscribtionPlan() {
+  void _subscriptionPlan() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -639,6 +568,94 @@ class _StoreSectionState extends State<StoreSection> {
                 fontWeight: FontWeight.w500,
                 color: Colors.black45,
                 fontSize: 12.0),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _constructCategorySection(List<dynamic> _fetchData, int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => StoreSection(
+                          pageName: PageName.MenuPage,
+                        )));
+          },
+          child: Container(
+            width: 150.0,
+            height: 150.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50.0),
+                  topRight: Radius.circular(50.0),
+                  bottomLeft: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.white24,
+                  backgroundImage:
+                      NetworkImage(_fetchData[index * 2]['categoryImageUrl']),
+                  radius: 50.0,
+                ),
+                Text(
+                  _fetchData[index * 2]['categoryName'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 20.0,
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => StoreSection(
+                          pageName: PageName.MenuPage,
+                        )));
+          },
+          child: Container(
+            width: 150.0,
+            height: 160.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50.0),
+                  topRight: Radius.circular(50.0),
+                  bottomLeft: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.white24,
+                  backgroundImage: NetworkImage(
+                      _fetchData[index * 2 + 1]['categoryImageUrl']),
+                  radius: 50.0,
+                  onBackgroundImageError: (_, __) {
+                    Center(child: CircularProgressIndicator());
+                  },
+                ),
+                Text(
+                  _fetchData[index * 2 + 1]['categoryName'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
         ),
       ],

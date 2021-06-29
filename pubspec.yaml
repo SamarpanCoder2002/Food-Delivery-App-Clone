@@ -24,7 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
   connectivity: ^3.0.6
-  shimmer_animation: ^2.0.0
   http:
 
 
