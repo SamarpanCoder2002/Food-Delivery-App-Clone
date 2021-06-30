@@ -1,12 +1,12 @@
 ### <p align="center"> Food Delivery App Clone</p>
 
 <p align="center">
-<img src="documents/1.jpg" width=300>
-<img src="documents/2.jpg" width=300>
-<img src="documents/3.jpg" width=300>'
-<img src="documents/4.jpg" width=300>
-<img src="documents/5.jpg" width=300>
-<img src="documents/6.jpg" width=300>
+<img src="documents/1.jpg" width=250>
+<img src="documents/2.jpg" width=250>
+<img src="documents/3.jpg" width=250>'
+<img src="documents/4.jpg" width=250>
+<img src="documents/5.jpg" width=250>
+<img src="documents/6.jpg" width=250>
 </p>
 
 ## Getting Started
