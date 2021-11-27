@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:connectivity/connectivity.dart';
-import 'package:customer/BackEnd/api_call_section.dart';
 import 'package:customer/Screens/delivery_once_and_create_subscription_screen.dart';
+import 'package:customer/Screens/food_menu.dart';
 
 import 'package:customer/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'common_widgets.dart';
-import 'food_menu.dart';
 
 class StoreSection extends StatefulWidget {
   final PageName pageName;
@@ -22,7 +19,6 @@ class StoreSection extends StatefulWidget {
 
 class _StoreSectionState extends State<StoreSection> {
   bool _vegOnlyToggle = false;
-  late Future _future;
 
   void _checkConnectivity() async {
     final ConnectivityResult connectivityResult =
@@ -50,10 +46,6 @@ class _StoreSectionState extends State<StoreSection> {
   @override
   void initState() {
     if (widget.pageName == PageName.StorePage) _checkConnectivity();
-
-    this._future = widget.pageName == PageName.StorePage
-        ? getStoreCollectionData()
-        : getFoodCategory();
     super.initState();
   }
 
@@ -175,66 +167,27 @@ class _StoreSectionState extends State<StoreSection> {
   }
 
   Widget _foodShowCaseForStore() {
-    return Container(
-        margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+    return GestureDetector(
+      onTap: () {
+        print(widget.pageName);
+        if (widget.pageName == PageName.StorePage)
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => FoodMenu()));
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
         width: double.maxFinite,
-        height: MediaQuery.of(context).size.height / 2,
-        child: FutureBuilder(
-            future: this._future,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                final List<dynamic> _fetchData =
-                    jsonDecode(snapshot.data.toString())['data'].values.first;
-
-                return ListView.builder(
-                  itemCount: _fetchData.length,
-                  itemBuilder: (context, index) => GestureDetector(
-                    onTap: () {
-                      print(widget.pageName);
-                      if (widget.pageName == PageName.StorePage)
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => FoodMenu()));
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 30.0),
-                      padding: EdgeInsets.only(top: 110.0),
-                      width: double.maxFinite,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30.0),
-                        image: (_fetchData[index]['shopImageUrl'] != Null &&
-                                !_fetchData[index]['shopImageUrl']
-                                    .toString()
-                                    .contains('null'))
-                            ? DecorationImage(
-                                image: NetworkImage(_fetchData[index]
-                                        ['shopImageUrl']
-                                    .toString()),
-                                fit: BoxFit.cover,
-                              )
-                            : DecorationImage(
-                                image: NetworkImage(
-                                    'https://media.istockphoto.com/vectors/error-like-laptop-with-dead-emoji-cartoon-flat-minimal-trend-modern-vector-id1011988208?k=6&m=1011988208&s=612x612&w=0&h=6l7ZtOJxcQ_xTThiNX_X0XWKRDx9rKZzgjSePb0XmtQ='),
-                                fit: BoxFit.cover,
-                              ),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0.0, 3.0),
-                            color: Colors.black26,
-                            blurRadius: 5.0,
-                          ),
-                        ],
-                      ),
-                      child: _manageDecoration(_fetchData, index),
-                    ),
-                  ),
-                );
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }));
+        child: Column(
+          children: [
+            for (int i = 0; i < 3; i++)
+              Padding(
+                padding: EdgeInsets.only(bottom: 20.0),
+                child: Image.asset('assets/images/shop_page_lower.png'),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _foodShowCaseForMenu() {
@@ -322,7 +275,7 @@ class _StoreSectionState extends State<StoreSection> {
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () {
-                                    _subscriptionPlan();
+                                    _subscribtionPlan();
                                   },
                                   child: Container(
                                     width: double.maxFinite,
@@ -366,31 +319,102 @@ class _StoreSectionState extends State<StoreSection> {
 
   Widget _flashSalePageCategory() {
     return Container(
-      margin: EdgeInsets.all(10.0),
-      padding: EdgeInsets.only(bottom: 20.0),
-      width: double.maxFinite,
-      height: MediaQuery.of(context).size.height / 2,
-      child: FutureBuilder(
-          future: this._future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              final List<dynamic> _fetchData =
-                  jsonDecode(snapshot.data.toString())['data'].values.first;
-
-              return ListView.builder(
-                itemCount: _fetchData.length ~/ 2.0,
-                itemBuilder: (context, index) =>
-                    _constructCategorySection(_fetchData, index),
-              );
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }),
+      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+      child: Column(
+        children: [
+          for (int i = 0; i < 4; i++)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => StoreSection(
+                                  pageName: PageName.MenuPage,
+                                )));
+                  },
+                  child: Container(
+                    width: 150.0,
+                    height: 150.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(50.0),
+                          topRight: Radius.circular(50.0),
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage:
+                              ExactAssetImage('assets/images/fruits.png'),
+                          radius: 50.0,
+                        ),
+                        Text(
+                          'Fruits',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => StoreSection(
+                                  pageName: PageName.MenuPage,
+                                )));
+                  },
+                  child: Container(
+                    width: 150.0,
+                    height: 160.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(50.0),
+                          topRight: Radius.circular(50.0),
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.black12,
+                          backgroundImage: ExactAssetImage(
+                              'assets/images/beverage.jpg'),
+                          radius: 50.0,
+                          onBackgroundImageError: (_, __) {
+                            Center(child: CircularProgressIndicator());
+                          },
+                        ),
+                        Text(
+                          'Beverages',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 
-  void _subscriptionPlan() {
+  void _subscribtionPlan() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -467,198 +491,6 @@ class _StoreSectionState extends State<StoreSection> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _manageDecoration(List<dynamic> _fetchData, int index) {
-    return Stack(
-      children: [
-        Container(
-          height: 100,
-          width: double.maxFinite,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30.0),
-                bottomRight: Radius.circular(30.0)),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 10.0, left: 20.0),
-          child: _fetchData[index]['shopName'] != null
-              ? Text(
-                  _fetchData[index]['shopName'],
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
-                )
-              : Text(
-                  'Shop Name Not Found',
-                  style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red),
-                ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 40.0, left: 25.0),
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/images/food_pic.png',
-                color: const Color.fromRGBO(32, 172, 79, 1),
-                width: 10.0,
-              ),
-              SizedBox(
-                width: 10.0,
-              ),
-              _fetchData[index]['typeOfFood'] != null &&
-                      _fetchData[index]['typeOfFood'].length > 0
-                  ? Text(
-                      _fetchData[index]['typeOfFood'][0].toString(),
-                      style: TextStyle(color: Colors.black45),
-                    )
-                  : Text(
-                      'Indian',
-                      style: TextStyle(color: Colors.black45),
-                    ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 25.0, top: 65.0),
-          child: Row(
-            children: [
-              Text(
-                '\u0025',
-                style:
-                    TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 10.0,
-              ),
-              Text(
-                '30% odder upto 100',
-                style: TextStyle(color: Colors.black45),
-              )
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.only(
-              top: 10.0, left: MediaQuery.of(context).size.width - 40 - 60),
-          padding: EdgeInsets.only(right: 3.0, left: 3.0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            borderRadius: BorderRadius.circular(2.0),
-          ),
-          child: Text(
-            '3.4\u2605',
-            style: TextStyle(
-                fontFamily: 'Gotham',
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 12.0),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-              top: 40.0, left: MediaQuery.of(context).size.width - 40 - 90),
-          child: Text(
-            "\u20B9${_fetchData[index]['priceCategory'] == null ? '100' : _fetchData[index]['priceCategory']} for one",
-            style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black45,
-                fontSize: 12.0),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _constructCategorySection(List<dynamic> _fetchData, int index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => StoreSection(
-                          pageName: PageName.MenuPage,
-                        )));
-          },
-          child: Container(
-            width: 150.0,
-            height: 150.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50.0),
-                  topRight: Radius.circular(50.0),
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white24,
-                  backgroundImage:
-                      NetworkImage(_fetchData[index * 2]['categoryImageUrl']),
-                  radius: 50.0,
-                ),
-                Text(
-                  _fetchData[index * 2]['categoryName'],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 20.0,
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => StoreSection(
-                          pageName: PageName.MenuPage,
-                        )));
-          },
-          child: Container(
-            width: 150.0,
-            height: 160.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50.0),
-                  topRight: Radius.circular(50.0),
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white24,
-                  backgroundImage: NetworkImage(
-                      _fetchData[index * 2 + 1]['categoryImageUrl']),
-                  radius: 50.0,
-                  onBackgroundImageError: (_, __) {
-                    Center(child: CircularProgressIndicator());
-                  },
-                ),
-                Text(
-                  _fetchData[index * 2 + 1]['categoryName'],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

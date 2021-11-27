@@ -42,12 +42,6 @@ class _DifferentNavigationControlState
           StoreSection(
             pageName: PageName.FlashSalePage,
           ),
-          Center(
-            child: Text(
-              'Profile Section Not Given in Design Set',
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
-            ),
-          ),
         ],
       ),
     );
@@ -71,10 +65,7 @@ class _DifferentNavigationControlState
         ),
         BottomNavigationBarItem(
             label: 'Flash Sale', icon: Icon(Icons.flash_on_outlined)),
-        BottomNavigationBarItem(
-          label: 'Profile',
-          icon: Icon(Icons.person_outline_outlined),
-        ),
+
       ],
       onTap: (index) {
         print('Index is: $index');

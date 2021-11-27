@@ -97,7 +97,8 @@ class _OrderOptionsScreenState extends State<OrderOptionsScreen> {
         children: [
           SizedBox(
             height: 150.0,
-            child: Image.asset('assets/images/dosa.png',
+            child: Image.asset(
+                'assets/images/dosa.png',
                 errorBuilder: (_, __, ___) => Center(
                       child: CircularProgressIndicator(),
                     )),

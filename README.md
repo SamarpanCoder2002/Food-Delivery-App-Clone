@@ -1,13 +1,21 @@
-### <p align="center"> Food Delivery App Clone</p>
+### <p align="center"> 😸 Food Delivery App UI </p>
+
+#### <p align="center"> 🤩 Made With Flutter</p>
 
 <p align="center">
-<img src="documents/1.jpg" width=250>
-<img src="documents/2.jpg" width=250>
-<img src="documents/3.jpg" width=250>'
-<img src="documents/4.jpg" width=250>
-<img src="documents/5.jpg" width=250>
-<img src="documents/6.jpg" width=250>
+<img src="documents/1.jpg" width = 200 alt="App_UI">
+<img src="documents/2.jpg" width = 200 alt="App_UI">
+<img src="documents/3.jpg" width = 200 alt="App_UI">
+<img src="documents/4.jpg" width = 200 alt="App_UI">
+<img src="documents/5.jpg" width = 200 alt="App_UI">
+<img src="documents/6.jpg" width = 200 alt="App_UI">
+<img src="documents/7.jpg" width = 200 alt="App_UI">
+<img src="documents/8.jpg" width = 200 alt="App_UI">
 </p>
+
+### <p align="center">[🙋 Click Here To Download The App](https://drive.google.com/file/d/1jMckCGR888ApzHx-v1QDi1xnn2tbtQny/view?usp=sharing)</p>
+
+### <p align="center">Show 💘 by staring this repo</p>
 
 ## Getting Started
 
